@@ -1,0 +1,186 @@
+{
+  "name": "Test Chat",
+  "type": "private_supergroup",
+  "id": 999,
+  "messages": [
+    {
+      "id": 1,
+      "type": "message",
+      "date": "2026-01-01T10:00:00",
+      "date_unixtime": "1767261600",
+      "from": "Alice",
+      "from_id": "user1",
+      "text": "Hello!",
+      "text_entities": [{"type": "plain", "text": "Hello!"}]
+    },
+    {
+      "id": 2,
+      "type": "service",
+      "date": "2026-01-01T10:01:00",
+      "date_unixtime": "1767261660",
+      "actor": "Alice",
+      "actor_id": "user1",
+      "action": "pin_message",
+      "message_id": 1,
+      "text": "",
+      "text_entities": []
+    },
+    {
+      "id": 3,
+      "type": "message",
+      "date": "2026-01-01T10:02:00",
+      "date_unixtime": "1767261720",
+      "from": "Bob",
+      "from_id": "user2",
+      "reply_to_message_id": 1,
+      "text": "Hi Alice!",
+      "text_entities": [{"type": "plain", "text": "Hi Alice!"}]
+    },
+    {
+      "id": 4,
+      "type": "message",
+      "date": "2026-01-01T10:03:00",
+      "date_unixtime": "1767261780",
+      "from": "Alice",
+      "from_id": "user1",
+      "text": [
+        "Смотри ",
+        {"type": "text_link", "text": "тут", "href": "https://example.com"},
+        " и ",
+        {"type": "link", "text": "https://foo.bar"}
+      ],
+      "text_entities": [
+        {"type": "plain", "text": "Смотри "},
+        {"type": "text_link", "text": "тут", "href": "https://example.com"},
+        {"type": "plain", "text": " и "},
+        {"type": "link", "text": "https://foo.bar"}
+      ]
+    },
+    {
+      "id": 5,
+      "type": "message",
+      "date": "2026-01-01T10:04:00",
+      "date_unixtime": "1767261840",
+      "from": "Bob",
+      "from_id": "user2",
+      "text": [
+        {"type": "bold", "text": "Важно"},
+        ": ",
+        {"type": "italic", "text": "не забудь"}
+      ],
+      "text_entities": [
+        {"type": "bold", "text": "Важно"},
+        {"type": "plain", "text": ": "},
+        {"type": "italic", "text": "не забудь"}
+      ]
+    },
+    {
+      "id": 6,
+      "type": "message",
+      "date": "2026-01-01T10:05:00",
+      "date_unixtime": "1767261900",
+      "from": "Carol",
+      "from_id": "user3",
+      "text": [
+        "Цитирую:\n",
+        {"type": "blockquote", "text": "сначала делаем\nпотом проверяем"},
+        "\nвот так."
+      ],
+      "text_entities": [
+        {"type": "plain", "text": "Цитирую:\n"},
+        {"type": "blockquote", "text": "сначала делаем\nпотом проверяем"},
+        {"type": "plain", "text": "\nвот так."}
+      ]
+    },
+    {
+      "id": 7,
+      "type": "message",
+      "date": "2026-01-01T10:06:00",
+      "date_unixtime": "1767261960",
+      "from": "Alice",
+      "from_id": "user1",
+      "photo": "photos/photo_1.jpg",
+      "width": 1280,
+      "height": 720,
+      "photo_file_size": 12345,
+      "text": "Вот фото",
+      "text_entities": [{"type": "plain", "text": "Вот фото"}]
+    },
+    {
+      "id": 8,
+      "type": "message",
+      "date": "2026-01-01T10:07:00",
+      "date_unixtime": "1767262020",
+      "from": "Alice",
+      "from_id": "user1",
+      "file": "files/doc.pdf",
+      "file_name": "doc.pdf",
+      "file_size": 54321,
+      "mime_type": "application/pdf",
+      "text": "Документ",
+      "text_entities": [{"type": "plain", "text": "Документ"}]
+    },
+    {
+      "id": 9,
+      "type": "message",
+      "date": "2026-01-01T10:08:00",
+      "date_unixtime": "1767262080",
+      "from": "Bob",
+      "from_id": "user2",
+      "file": "voice/voice_1.ogg",
+      "media_type": "voice_message",
+      "mime_type": "audio/ogg",
+      "duration_seconds": 5,
+      "text": "",
+      "text_entities": []
+    },
+    {
+      "id": 10,
+      "type": "message",
+      "date": "2026-01-01T10:09:00",
+      "date_unixtime": "1767262140",
+      "from": "Carol",
+      "from_id": "user3",
+      "file": "stickers/sticker.webp",
+      "media_type": "sticker",
+      "sticker_emoji": "🔥",
+      "mime_type": "image/webp",
+      "text": "",
+      "text_entities": []
+    },
+    {
+      "id": 11,
+      "type": "message",
+      "date": "2026-01-01T10:10:00",
+      "date_unixtime": "1767262200",
+      "from": "Alice",
+      "from_id": "user1",
+      "text": [
+        "Реакция ",
+        {"type": "custom_emoji", "text": "🎉", "document_id": "12345"},
+        " на тесте."
+      ],
+      "text_entities": [
+        {"type": "plain", "text": "Реакция "},
+        {"type": "custom_emoji", "text": "🎉", "document_id": "12345"},
+        {"type": "plain", "text": " на тесте."}
+      ]
+    },
+    {
+      "id": 12,
+      "type": "message",
+      "date": "2026-01-01T10:11:00",
+      "date_unixtime": "1767262260",
+      "from": "Dave",
+      "from_id": "user4",
+      "file": "video/clip.mp4",
+      "media_type": "video_file",
+      "mime_type": "video/mp4",
+      "duration_seconds": 10,
+      "width": 640,
+      "height": 480,
+      "text": "Клип",
+      "text_entities": [{"type": "plain", "text": "Клип"}]
+    }
+  ]
+}
