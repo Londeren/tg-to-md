@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+
+# Telegram-экспорты — потенциальные личные данные, в репозиторий не кладём
+partita-iva.json
+result.json
+*.telegram-export.json
