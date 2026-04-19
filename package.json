@@ -1,0 +1,24 @@
+{
+  "name": "tg-to-md",
+  "version": "0.1.0",
+  "description": "Convert Telegram chat JSON export to a single LLM-friendly Markdown file",
+  "type": "module",
+  "bin": {
+    "tg-to-md": "bin/tg-to-md.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "start": "node bin/tg-to-md.js"
+  },
+  "dependencies": {
+    "stream-json": "^1.8.0"
+  }
+}
