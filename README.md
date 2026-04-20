@@ -4,16 +4,20 @@ Convert a Telegram chat JSON export into a single Markdown file optimized for LL
 
 ## Usage
 
+Not published to npm. Run it straight from GitHub:
+
 ```bash
-npx tg-to-md <input.json> [output.md]
+npx -y github:Londeren/tg-to-md <input.json> [output.md]
 ```
 
 If `output.md` is omitted, the tool writes alongside the input with `.json` replaced by `.md`:
 
 ```bash
-npx tg-to-md chat.json          # → chat.md
-npx tg-to-md chat.json out.md   # → out.md
+npx -y github:Londeren/tg-to-md chat.json          # → chat.md
+npx -y github:Londeren/tg-to-md chat.json out.md   # → out.md
 ```
+
+The first run clones the repo into npx's cache and installs `stream-json`; subsequent runs are fast.
 
 ## Input
 
