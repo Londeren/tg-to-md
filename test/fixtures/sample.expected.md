@@ -1,6 +1,6 @@
 # Test Chat
 
-Экспорт Telegram-чата. ID: 999.
+Экспорт Telegram-чата. Type: private_supergroup. ID: 999.
 
 ---
 

@@ -5,10 +5,23 @@ const VOICE = "🎤";
 const SERVICE_TYPE = "service";
 
 export function renderHeader(meta) {
-  const name = meta.name ?? "Chat";
-  const id = meta.id ?? "";
-  const idLine = id !== "" ? ` ID: ${id}.` : "";
-  return `# ${name}\n\nЭкспорт Telegram-чата.${idLine}\n\n---\n`;
+  const name = resolveChatName(meta);
+  const parts = [];
+  if (meta.type) parts.push(`Type: ${meta.type}`);
+  if (meta.id !== undefined && meta.id !== null && meta.id !== "") {
+    parts.push(`ID: ${meta.id}`);
+  }
+  const info = parts.length ? ` ${parts.join(". ")}.` : "";
+  return `# ${name}\n\nЭкспорт Telegram-чата.${info}\n\n---\n`;
+}
+
+function resolveChatName(meta) {
+  if (meta.name) return meta.name;
+  if (meta.type === "saved_messages") return "Saved Messages";
+  if (meta.id !== undefined && meta.id !== null && meta.id !== "") {
+    return `Chat #${meta.id}`;
+  }
+  return "Chat";
 }
 
 export function renderMessage(msg) {

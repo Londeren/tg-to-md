@@ -8,16 +8,31 @@ import { parseTelegramExport } from "../src/parser.js";
 import { renderHeader, renderMessage } from "../src/render.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const FIXTURE = join(__dirname, "fixtures", "sample.json");
-const EXPECTED = join(__dirname, "fixtures", "sample.expected.md");
 
-test("smoke: sample.json renders to sample.expected.md", async () => {
-  const { meta, messages } = await parseTelegramExport(FIXTURE);
-  let actual = renderHeader(meta);
-  for await (const msg of messages) {
-    const rendered = renderMessage(msg);
-    if (rendered !== null) actual += "\n" + rendered;
+async function renderAll(inputPath) {
+  const { chats } = await parseTelegramExport(inputPath);
+  let out = "";
+  let first = true;
+  for await (const { meta, messages } of chats) {
+    if (!first) out += "\n---\n\n";
+    first = false;
+    out += renderHeader(meta);
+    for await (const msg of messages) {
+      const rendered = renderMessage(msg);
+      if (rendered !== null) out += "\n" + rendered;
+    }
   }
-  const expected = await readFile(EXPECTED, "utf8");
+  return out;
+}
+
+test("smoke: sample.json (single-chat format) renders to sample.expected.md", async () => {
+  const actual = await renderAll(join(__dirname, "fixtures", "sample.json"));
+  const expected = await readFile(join(__dirname, "fixtures", "sample.expected.md"), "utf8");
+  assert.equal(actual, expected);
+});
+
+test("smoke: bulk.json (multi-chat format) renders to bulk.expected.md", async () => {
+  const actual = await renderAll(join(__dirname, "fixtures", "bulk.json"));
+  const expected = await readFile(join(__dirname, "fixtures", "bulk.expected.md"), "utf8");
   assert.equal(actual, expected);
 });

@@ -21,26 +21,39 @@ async function main(argv) {
   out.on("error", () => {});
 
   const started = Date.now();
-  const { meta, messages } = await parseTelegramExport(inputArg);
-  await write(out, renderHeader(meta));
+  const { chats } = await parseTelegramExport(inputArg);
   let rendered = 0;
   let skipped = 0;
-  for await (const msg of messages) {
-    const block = renderMessage(msg);
-    if (block === null) {
-      skipped++;
-      continue;
+  let chatCount = 0;
+  let firstMeta = null;
+  let isFirstChat = true;
+  for await (const { meta, messages } of chats) {
+    chatCount++;
+    if (firstMeta === null) firstMeta = meta;
+    if (!isFirstChat) await write(out, "\n---\n\n");
+    isFirstChat = false;
+    await write(out, renderHeader(meta));
+    for await (const msg of messages) {
+      const block = renderMessage(msg);
+      if (block === null) {
+        skipped++;
+        continue;
+      }
+      await write(out, "\n" + block);
+      rendered++;
     }
-    await write(out, "\n" + block);
-    rendered++;
   }
   out.end();
   await finished(out);
 
   const elapsed = ((Date.now() - started) / 1000).toFixed(1);
-  const chatLabel = meta.name ? `"${meta.name}"` : "chat";
+  const label = chatCount > 1
+    ? `bulk export (${chatCount} chats)`
+    : firstMeta?.name
+      ? `"${firstMeta.name}"`
+      : "chat";
   process.stderr.write(
-    `tg-to-md: ${chatLabel} → ${outputPath} (${rendered} messages, ${skipped} service skipped, ${elapsed}s)\n`,
+    `tg-to-md: ${label} → ${outputPath} (${rendered} messages, ${skipped} service skipped, ${elapsed}s)\n`,
   );
 }
 

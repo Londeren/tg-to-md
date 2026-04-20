@@ -4,4 +4,5 @@ node_modules/
 # Real Telegram exports — contain private messages, never commit.
 result.json
 partita-iva.json
+bulk-export.json
 

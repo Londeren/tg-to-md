@@ -1,0 +1,70 @@
+{
+ "about": "Here is the data you requested.",
+ "chats": {
+  "about": "This page lists all chats from this export.",
+  "list": [
+   {
+    "type": "saved_messages",
+    "id": 8041249877,
+    "messages": [
+     {
+      "id": 1,
+      "type": "message",
+      "date": "2026-01-01T09:00:00",
+      "date_unixtime": "1767258000",
+      "from": "Self",
+      "from_id": "user8041249877",
+      "text": "Note to self",
+      "text_entities": [{"type": "plain", "text": "Note to self"}]
+     }
+    ]
+   },
+   {
+    "name": "Alice",
+    "type": "personal_chat",
+    "id": 123,
+    "messages": [
+     {
+      "id": 10,
+      "type": "message",
+      "date": "2026-01-02T10:00:00",
+      "date_unixtime": "1767344400",
+      "from": "Alice",
+      "from_id": "user123",
+      "text": "Hi",
+      "text_entities": [{"type": "plain", "text": "Hi"}]
+     },
+     {
+      "id": 11,
+      "type": "service",
+      "date": "2026-01-02T10:01:00",
+      "date_unixtime": "1767344460",
+      "actor": "Alice",
+      "actor_id": "user123",
+      "action": "pin_message",
+      "message_id": 10,
+      "text": "",
+      "text_entities": []
+     }
+    ]
+   },
+   {
+    "name": null,
+    "type": "personal_chat",
+    "id": 8777672644,
+    "messages": [
+     {
+      "id": 20,
+      "type": "message",
+      "date": "2026-01-03T11:00:00",
+      "date_unixtime": "1767430800",
+      "from": "Unknown",
+      "from_id": "user8777672644",
+      "text": "hey",
+      "text_entities": [{"type": "plain", "text": "hey"}]
+     }
+    ]
+   }
+  ]
+ }
+}
