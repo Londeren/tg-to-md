@@ -20,15 +20,28 @@ async function main(argv) {
   // не превратился в uncaughtException до вызова finished(out) ниже.
   out.on("error", () => {});
 
+  const started = Date.now();
   const { meta, messages } = await parseTelegramExport(inputArg);
   await write(out, renderHeader(meta));
+  let rendered = 0;
+  let skipped = 0;
   for await (const msg of messages) {
-    const rendered = renderMessage(msg);
-    if (rendered === null) continue;
-    await write(out, "\n" + rendered);
+    const block = renderMessage(msg);
+    if (block === null) {
+      skipped++;
+      continue;
+    }
+    await write(out, "\n" + block);
+    rendered++;
   }
   out.end();
   await finished(out);
+
+  const elapsed = ((Date.now() - started) / 1000).toFixed(1);
+  const chatLabel = meta.name ? `"${meta.name}"` : "chat";
+  process.stderr.write(
+    `tg-to-md: ${chatLabel} → ${outputPath} (${rendered} messages, ${skipped} skipped, ${elapsed}s)\n`,
+  );
 }
 
 function deriveOutputPath(inputPath) {
