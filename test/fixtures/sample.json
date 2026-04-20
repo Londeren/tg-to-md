@@ -84,12 +84,12 @@
       "text": [
         "Цитирую:\n",
         {"type": "blockquote", "text": "сначала делаем\nпотом проверяем"},
-        "\nвот так."
+        "\n\nвот так."
       ],
       "text_entities": [
         {"type": "plain", "text": "Цитирую:\n"},
         {"type": "blockquote", "text": "сначала делаем\nпотом проверяем"},
-        {"type": "plain", "text": "\nвот так."}
+        {"type": "plain", "text": "\n\nвот так."}
       ]
     },
     {

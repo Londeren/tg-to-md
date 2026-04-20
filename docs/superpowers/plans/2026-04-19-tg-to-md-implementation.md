@@ -180,12 +180,12 @@ git commit -m "bootstrap: package.json with stream-json dependency"
       "text": [
         "Цитирую:\n",
         {"type": "blockquote", "text": "сначала делаем\nпотом проверяем"},
-        "\nвот так."
+        "\n\nвот так."
       ],
       "text_entities": [
         {"type": "plain", "text": "Цитирую:\n"},
         {"type": "blockquote", "text": "сначала делаем\nпотом проверяем"},
-        {"type": "plain", "text": "\nвот так."}
+        {"type": "plain", "text": "\n\nвот так."}
       ]
     },
     {
@@ -381,18 +381,22 @@ const EXPECTED = join(__dirname, "fixtures", "sample.expected.md");
 
 test("smoke: sample.json renders to sample.expected.md", async () => {
   const { meta, messages } = await parseTelegramExport(FIXTURE);
-  const chunks = [renderHeader(meta)];
+  let actual = renderHeader(meta);
   for await (const msg of messages) {
     const rendered = renderMessage(msg);
-    if (rendered !== null) chunks.push(rendered);
+    if (rendered !== null) actual += "\n" + rendered;
   }
-  const actual = chunks.join("\n") + "\n";
+  actual += "\n";
   const expected = await readFile(EXPECTED, "utf8");
   assert.equal(actual, expected);
 });
 ```
 
-Формат склейки: `renderHeader` и каждый ненулевой `renderMessage` возвращают блок без завершающего `\n`. Склеиваем через `"\n"` (одна пустая строка между блоками) и добавляем финальный `\n`.
+Формат склейки зеркалит CLI из Task 6:
+- `renderHeader(meta)` возвращает шапку, заканчивающуюся на `\n` после `---` (последняя непустая строка шапки).
+- Каждый ненулевой `renderMessage(msg)` возвращает блок **без** завершающего `\n`.
+- Между шапкой/блоками вставляем `\n` перед блоком — это даёт пустую строку-разделитель (одна пустая строка между блоками).
+- Финальный `\n` — чтобы файл заканчивался переводом строки.
 
 - [ ] **Step 2: Запустить тест, убедиться, что падает**
 
