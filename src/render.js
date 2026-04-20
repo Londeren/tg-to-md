@@ -113,10 +113,9 @@ function formatBlockquote(text) {
 }
 
 function formatDate(iso) {
-  // Input — "2026-01-01T10:00:00" (exporter's local time, no timezone).
-  // Output — "2026-01-01 10:00".
-  if (!iso) return "";
-  const [date, time = ""] = iso.split("T");
-  const hhmm = time.slice(0, 5);
-  return hhmm ? `${date} ${hhmm}` : date;
+  // Pass the exporter's local ISO timestamp through unchanged (e.g.
+  // "2026-01-01T10:00:00"). ISO 8601 is the canonical format LLMs expect;
+  // reformatting it loses seconds (which disambiguate same-minute messages)
+  // without improving anything for downstream consumption.
+  return iso ?? "";
 }
