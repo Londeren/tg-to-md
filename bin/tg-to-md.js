@@ -40,7 +40,7 @@ async function main(argv) {
   const elapsed = ((Date.now() - started) / 1000).toFixed(1);
   const chatLabel = meta.name ? `"${meta.name}"` : "chat";
   process.stderr.write(
-    `tg-to-md: ${chatLabel} → ${outputPath} (${rendered} messages, ${skipped} skipped, ${elapsed}s)\n`,
+    `tg-to-md: ${chatLabel} → ${outputPath} (${rendered} messages, ${skipped} service skipped, ${elapsed}s)\n`,
   );
 }
 
