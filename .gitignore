@@ -1,3 +1,7 @@
 node_modules/
 .DS_Store
 
+# Real Telegram exports — contain private messages, never commit.
+result.json
+partita-iva.json
+
