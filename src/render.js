@@ -16,7 +16,7 @@ export function renderMessage(msg) {
 
   const header = renderMessageHeader(msg);
   const body = renderBody(msg);
-  return `${header}\n\n${body}`;
+  return `${header}\n\n${body}\n`;
 }
 
 function renderMessageHeader(msg) {
