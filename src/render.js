@@ -31,7 +31,7 @@ function renderMessageHeader(msg) {
 }
 
 function renderBody(msg) {
-  // Стикер: тело — сам эмодзи, префикс не применяем.
+  // Sticker: body is the emoji itself, no media prefix.
   if (msg.sticker_emoji) return msg.sticker_emoji;
 
   const prefix = mediaPrefix(msg);
@@ -85,14 +85,14 @@ function renderEntity(e) {
     case "phone":
       return e.text ?? "";
     default:
-      // Неизвестный тип — fallback на сырой текст, чтобы не терять контент.
+      // Unknown entity type — fall back to raw text to avoid losing content.
       return e.text ?? "";
   }
 }
 
 function formatBlockquote(text) {
-  // Каждая строка блока цитаты получает префикс "> ".
-  // Пустые строки внутри блока тоже получают "> " — это стандартное MD-поведение.
+  // Every line of the quote gets a leading "> ".
+  // Empty lines inside the block also get "> " — standard Markdown behavior.
   return text
     .split("\n")
     .map((line) => `> ${line}`)
@@ -100,8 +100,8 @@ function formatBlockquote(text) {
 }
 
 function formatDate(iso) {
-  // Вход — "2026-01-01T10:00:00" (локальное время экспортёра, без таймзоны).
-  // Выход — "2026-01-01 10:00".
+  // Input — "2026-01-01T10:00:00" (exporter's local time, no timezone).
+  // Output — "2026-01-01 10:00".
   if (!iso) return "";
   const [date, time = ""] = iso.split("T");
   const hhmm = time.slice(0, 5);

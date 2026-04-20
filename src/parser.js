@@ -21,10 +21,11 @@ export async function parseTelegramExport(inputPath) {
 }
 
 async function readHeadMeta(inputPath) {
-  // Поля "name" и "id" в экспорте Telegram Desktop идут в самом начале JSON
-  // (до массива messages). Читаем первые 16 КБ и выдёргиваем значения регексами —
-  // этого достаточно, а потоковая сборка метаданных через stream-json при одновременной
-  // стриминговой обработке массива messages усложнила бы архитектуру без реальной выгоды.
+  // "name" and "id" sit at the very top of a Telegram Desktop JSON export,
+  // before the messages array. Reading the first 16 KB and pulling the values
+  // with regexes is enough; folding meta extraction into the streaming
+  // pipeline that consumes the messages array would complicate the
+  // architecture without any practical gain.
   const fh = await fs.promises.open(inputPath, "r");
   try {
     const buf = Buffer.alloc(16 * 1024);
@@ -39,14 +40,14 @@ async function readHeadMeta(inputPath) {
 }
 
 function matchName(head) {
-  // Учитываем возможные экранированные кавычки внутри имени.
+  // Allow escaped quotes inside the name.
   const m = head.match(/"name"\s*:\s*"((?:\\.|[^"\\])*)"/);
   if (!m) return null;
   return unescapeJsonString(m[1]);
 }
 
 function matchId(head) {
-  // id может быть отрицательным (для супергрупп с -100...).
+  // id can be negative (supergroups use -100... prefix).
   const m = head.match(/"id"\s*:\s*(-?\d+)/);
   return m ? m[1] : null;
 }

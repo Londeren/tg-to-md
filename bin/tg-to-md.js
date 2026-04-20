@@ -16,8 +16,8 @@ async function main(argv) {
   const outputPath = outputArg ?? deriveOutputPath(inputArg);
 
   const out = fs.createWriteStream(outputPath);
-  // No-op listener, чтобы ранний 'error' (например, EACCES от open)
-  // не превратился в uncaughtException до вызова finished(out) ниже.
+  // No-op listener so that an early 'error' (e.g. EACCES on open) does not
+  // turn into an uncaughtException before finished(out) is called below.
   out.on("error", () => {});
 
   const started = Date.now();
