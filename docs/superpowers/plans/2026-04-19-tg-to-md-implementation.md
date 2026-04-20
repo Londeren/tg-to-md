@@ -386,17 +386,16 @@ test("smoke: sample.json renders to sample.expected.md", async () => {
     const rendered = renderMessage(msg);
     if (rendered !== null) actual += "\n" + rendered;
   }
-  actual += "\n";
   const expected = await readFile(EXPECTED, "utf8");
   assert.equal(actual, expected);
 });
 ```
 
 Формат склейки зеркалит CLI из Task 6:
-- `renderHeader(meta)` возвращает шапку, заканчивающуюся на `\n` после `---` (последняя непустая строка шапки).
-- Каждый ненулевой `renderMessage(msg)` возвращает блок **без** завершающего `\n`.
-- Между шапкой/блоками вставляем `\n` перед блоком — это даёт пустую строку-разделитель (одна пустая строка между блоками).
-- Финальный `\n` — чтобы файл заканчивался переводом строки.
+- `renderHeader(meta)` возвращает шапку, заканчивающуюся на `\n` после `---`.
+- Каждый ненулевой `renderMessage(msg)` возвращает блок `"### …\n\n<body>\n"` **с** завершающим `\n` — последний `\n` в выходе файла приходит именно оттуда.
+- Перед каждым блоком после шапки вставляем `\n` — это даёт пустую строку-разделитель между блоками (`…\n` + `\n…` = два подряд `\n`).
+- Финальный `\n` отдельно добавлять не нужно — он уже есть в конце последнего `renderMessage`.
 
 - [ ] **Step 2: Запустить тест, убедиться, что падает**
 
@@ -440,7 +439,10 @@ export function renderMessage(msg) {
 
   const header = renderMessageHeader(msg);
   const body = renderBody(msg);
-  return `${header}\n\n${body}`;
+  // Каждый блок заканчивается `\n`, чтобы его можно было конкатенировать
+  // с `\n` перед следующим блоком — это даёт пустую строку-разделитель и
+  // одновременно гарантирует `\n` в конце файла без дополнительного шага.
+  return `${header}\n\n${body}\n`;
 }
 
 function renderMessageHeader(msg) {
@@ -555,10 +557,16 @@ git commit -m "feat(render): pure rendering functions for message and header"
 
 ```javascript
 import fs from "node:fs";
-import { chain } from "stream-chain";
-import { parser } from "stream-json";
-import { pick } from "stream-json/filters/Pick.js";
-import { streamArray } from "stream-json/streamers/StreamArray.js";
+import { createRequire } from "node:module";
+
+// stream-json и stream-chain в 1.9.x — CJS-only, default-export — функция,
+// named-импорты `{ chain } / { parser }` на ESM-стороне не резолвятся
+// (Node выставляет только `default`). createRequire — официальный interop.
+const require = createRequire(import.meta.url);
+const { chain } = require("stream-chain");
+const { parser } = require("stream-json");
+const { pick } = require("stream-json/filters/Pick.js");
+const { streamArray } = require("stream-json/streamers/StreamArray.js");
 
 /**
  * Stream-friendly reader for a Telegram chat JSON export.
@@ -686,7 +694,6 @@ async function main(argv) {
       if (rendered === null) continue;
       await write(out, "\n" + rendered);
     }
-    await write(out, "\n");
   } finally {
     out.end();
     await once(out, "close");
@@ -719,7 +726,7 @@ main(process.argv).catch((err) => {
 - Shebang → работает через `npx tg-to-md` после публикации в npm.
 - `deriveOutputPath`: у `input.json` заменяем `.json` на `.md`; без расширения — просто дописываем `.md`.
 - `await write(...)` реализует backpressure: если внутренний буфер WriteStream переполнен, ждём `drain`, прежде чем продолжить.
-- Склейка: первый блок (header) пишем без лидирующего `\n`; каждый следующий блок — с `\n` впереди (это и есть «пустая строка между блоками»). Финальный `\n` — чтобы файл заканчивался переводом строки.
+- Склейка: первый блок (header) пишем без лидирующего `\n`; каждый следующий блок — с `\n` впереди. Вместе с завершающим `\n` внутри `renderMessage` это даёт пустую строку между блоками и корректный `\n` в конце файла без отдельного финального write.
 
 - [ ] **Step 2: Сделать файл исполняемым**
 

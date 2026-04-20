@@ -18,7 +18,6 @@ test("smoke: sample.json renders to sample.expected.md", async () => {
     const rendered = renderMessage(msg);
     if (rendered !== null) actual += "\n" + rendered;
   }
-  actual += "\n";
   const expected = await readFile(EXPECTED, "utf8");
   assert.equal(actual, expected);
 });
