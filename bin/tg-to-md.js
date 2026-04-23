@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import fs from "node:fs";
-import path from "node:path";
 import { once } from "node:events";
 import { finished } from "node:stream/promises";
 
 import { parseTelegramExport } from "../src/parser.js";
 import { renderExport } from "../src/pipeline.js";
+import { deriveOutputPath } from "../src/filename.js";
 
 async function main(argv) {
   const [inputArg, outputArg] = argv.slice(2);
@@ -13,15 +13,16 @@ async function main(argv) {
     process.stderr.write("Usage: tg-to-md <input.json> [output.md]\n");
     process.exit(1);
   }
-  const outputPath = outputArg ?? deriveOutputPath(inputArg);
+
+  const started = Date.now();
+  const parseResult = await parseTelegramExport(inputArg);
+  const outputPath = outputArg ?? deriveOutputPath(inputArg, parseResult);
 
   const out = fs.createWriteStream(outputPath);
   // No-op listener so that an early 'error' (e.g. EACCES on open) does not
   // turn into an uncaughtException before finished(out) is called below.
   out.on("error", () => {});
 
-  const started = Date.now();
-  const parseResult = await parseTelegramExport(inputArg);
   const stats = await renderExport(parseResult, (chunk) => write(out, chunk));
   out.end();
   await finished(out);
@@ -35,12 +36,6 @@ async function main(argv) {
   process.stderr.write(
     `tg-to-md: ${label} → ${outputPath} (${stats.rendered} messages, ${stats.skippedTotal} service skipped, ${elapsed}s)\n`,
   );
-}
-
-function deriveOutputPath(inputPath) {
-  const ext = path.extname(inputPath);
-  const base = ext ? inputPath.slice(0, -ext.length) : inputPath;
-  return `${base}.md`;
 }
 
 async function write(stream, chunk) {
