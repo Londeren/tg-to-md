@@ -15,7 +15,10 @@ const { streamArray } = require("stream-json/streamers/StreamArray.js");
  *   - bulk export (Settings → Export Telegram data): top-level object has
  *     `chats.list[]`, each entry being one chat with its own `messages`.
  *
- * Returns `{ chats }` — an async iterable of `{ meta, messages }` pairs.
+ * Returns `{ chats, isBulk, singleMeta }`:
+ *   - `chats`: async iterable of `{ meta, messages }` pairs.
+ *   - `isBulk`: true for bulk export (`chats.list[]`), false for single-chat.
+ *   - `singleMeta`: `{ name, type, id }` for single-chat input; `null` for bulk.
  * For single-chat input the iterable yields exactly one chat.
  *
  * Memory usage stays bounded: for single-chat input the messages array is
@@ -28,11 +31,19 @@ const { streamArray } = require("stream-json/streamers/StreamArray.js");
 export async function parseTelegramExport(inputPath) {
   const head = await readHead(inputPath);
   if (isBulkFormat(head)) {
-    return { chats: streamBulkChats(inputPath) };
+    return {
+      chats: streamBulkChats(inputPath),
+      isBulk: true,
+      singleMeta: null,
+    };
   }
   const meta = extractSingleMeta(head);
   const messages = streamMessagesAt(inputPath, "messages");
-  return { chats: singleChat(meta, messages) };
+  return {
+    chats: singleChat(meta, messages),
+    isBulk: false,
+    singleMeta: meta,
+  };
 }
 
 async function* singleChat(meta, messages) {
