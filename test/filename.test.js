@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { sanitizeFilename } from "../src/filename.js";
+import { sanitizeFilename, deriveOutputPath } from "../src/filename.js";
 
 test("sanitizeFilename: plain name returned as is", () => {
   assert.equal(sanitizeFilename("Damir"), "Damir");
@@ -42,4 +42,51 @@ test("sanitizeFilename: UTF-8 name >200 bytes truncated on codepoint boundary", 
 test("sanitizeFilename: ascii name >200 bytes truncated", () => {
   const long = "a".repeat(300);
   assert.equal(sanitizeFilename(long), "a".repeat(200));
+});
+
+test("deriveOutputPath: bulk export falls back to input-based name", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", { isBulk: true, singleMeta: null });
+  assert.equal(out, "/tmp/x/result.md");
+});
+
+test("deriveOutputPath: single-chat with name uses sanitized name", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", {
+    isBulk: false,
+    singleMeta: { name: "Damir", type: "personal_chat", id: 1 },
+  });
+  assert.equal(out, "/tmp/x/Damir.md");
+});
+
+test("deriveOutputPath: forbidden chars in name sanitized", () => {
+  const out = deriveOutputPath("/tmp/x/in.json", {
+    isBulk: false,
+    singleMeta: { name: "a/b?c", type: "personal_chat", id: 1 },
+  });
+  assert.equal(out, "/tmp/x/a_b_c.md");
+});
+
+test("deriveOutputPath: saved_messages without name → 'Saved Messages.md'", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", {
+    isBulk: false,
+    singleMeta: { name: null, type: "saved_messages", id: 42 },
+  });
+  assert.equal(out, "/tmp/x/Saved Messages.md");
+});
+
+test("deriveOutputPath: empty name after sanitization falls back", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", {
+    isBulk: false,
+    singleMeta: { name: "...", type: "personal_chat", id: 1 },
+  });
+  assert.equal(out, "/tmp/x/result.md");
+});
+
+test("deriveOutputPath: singleMeta null falls back", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", { isBulk: false, singleMeta: null });
+  assert.equal(out, "/tmp/x/result.md");
+});
+
+test("deriveOutputPath: input without extension gets .md appended", () => {
+  const out = deriveOutputPath("/tmp/x/backup", { isBulk: true, singleMeta: null });
+  assert.equal(out, "/tmp/x/backup.md");
 });
