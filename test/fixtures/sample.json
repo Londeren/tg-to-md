@@ -197,6 +197,17 @@
       "duration_seconds": 125,
       "text": "",
       "text_entities": []
+    },
+    {
+      "id": 14,
+      "type": "message",
+      "date": "2026-01-01T12:00:00",
+      "from": "Eve",
+      "forwarded_from": "Саня Барабаш",
+      "forwarded_from_id": "user999",
+      "text_entities": [
+        { "type": "plain", "text": "чо хоть вы" }
+      ]
     }
   ]
 }

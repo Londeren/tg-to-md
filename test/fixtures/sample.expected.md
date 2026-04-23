@@ -1,3 +1,13 @@
+# Legend
+
+- `### #<id>` — message id
+- `↩ #<id>` — reply to message
+- `↪ <name>` — forwarded from
+- `[emoji×N, …]` — reactions (🧩 = custom emoji group)
+- 🖼️ photo · 📎 file · 🎤 voice/video note · 📌 pin · 📞 call
+
+---
+
 # Test Chat
 
 > Telegram · private_supergroup · id 999.
@@ -58,3 +68,7 @@ Hi Alice!
 ### #13 — Alice · 2026-01-01T10:12:00
 
 📞 2:05
+
+### #14 — Eve · 2026-01-01T12:00:00 · ↪ Саня Барабаш
+
+чо хоть вы

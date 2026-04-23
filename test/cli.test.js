@@ -35,7 +35,7 @@ test("cli: uses chat name for output filename when outputArg omitted", async () 
     await runCLI([input]);
     const produced = join(dir, "Damir.md");
     const content = await readFile(produced, "utf8");
-    assert.match(content, /^# Damir\n/);
+    assert.match(content, /\n# Damir\n/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

@@ -1,3 +1,13 @@
+# Legend
+
+- `### #<id>` — message id
+- `↩ #<id>` — reply to message
+- `↪ <name>` — forwarded from
+- `[emoji×N, …]` — reactions (🧩 = custom emoji group)
+- 🖼️ photo · 📎 file · 🎤 voice/video note · 📌 pin · 📞 call
+
+---
+
 # Saved Messages
 
 > Telegram · saved_messages · id 8041249877.
