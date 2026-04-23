@@ -22,6 +22,10 @@ Hi
 
 ---
 
+_Service messages skipped: join_group_by_link ×1._
+
+---
+
 # Chat #8777672644
 
 > Telegram · personal_chat · id 8777672644.

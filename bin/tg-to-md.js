@@ -5,7 +5,7 @@ import { once } from "node:events";
 import { finished } from "node:stream/promises";
 
 import { parseTelegramExport } from "../src/parser.js";
-import { renderHeader, renderMessage } from "../src/render.js";
+import { renderExport } from "../src/pipeline.js";
 
 async function main(argv) {
   const [inputArg, outputArg] = argv.slice(2);
@@ -21,39 +21,19 @@ async function main(argv) {
   out.on("error", () => {});
 
   const started = Date.now();
-  const { chats } = await parseTelegramExport(inputArg);
-  let rendered = 0;
-  let skipped = 0;
-  let chatCount = 0;
-  let firstMeta = null;
-  let isFirstChat = true;
-  for await (const { meta, messages } of chats) {
-    chatCount++;
-    if (firstMeta === null) firstMeta = meta;
-    if (!isFirstChat) await write(out, "\n---\n\n");
-    isFirstChat = false;
-    await write(out, renderHeader(meta));
-    for await (const msg of messages) {
-      const block = renderMessage(msg);
-      if (block === null) {
-        skipped++;
-        continue;
-      }
-      await write(out, "\n" + block);
-      rendered++;
-    }
-  }
+  const parseResult = await parseTelegramExport(inputArg);
+  const stats = await renderExport(parseResult, (chunk) => write(out, chunk));
   out.end();
   await finished(out);
 
   const elapsed = ((Date.now() - started) / 1000).toFixed(1);
-  const label = chatCount > 1
-    ? `bulk export (${chatCount} chats)`
-    : firstMeta?.name
-      ? `"${firstMeta.name}"`
+  const label = stats.chatCount > 1
+    ? `bulk export (${stats.chatCount} chats)`
+    : stats.firstMeta?.name
+      ? `"${stats.firstMeta.name}"`
       : "chat";
   process.stderr.write(
-    `tg-to-md: ${label} → ${outputPath} (${rendered} messages, ${skipped} service skipped, ${elapsed}s)\n`,
+    `tg-to-md: ${label} → ${outputPath} (${stats.rendered} messages, ${stats.skippedTotal} service skipped, ${elapsed}s)\n`,
   );
 }
 

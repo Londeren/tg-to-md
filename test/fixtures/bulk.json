@@ -45,6 +45,17 @@
       "message_id": 10,
       "text": "",
       "text_entities": []
+     },
+     {
+      "id": 12,
+      "type": "service",
+      "date": "2026-01-02T10:02:00",
+      "date_unixtime": "1767344520",
+      "actor": "Alice",
+      "actor_id": "user123",
+      "action": "join_group_by_link",
+      "text": "",
+      "text_entities": []
      }
     ]
    },

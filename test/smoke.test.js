@@ -5,23 +5,14 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 import { parseTelegramExport } from "../src/parser.js";
-import { renderHeader, renderMessage } from "../src/render.js";
+import { renderExport } from "../src/pipeline.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function renderAll(inputPath) {
-  const { chats } = await parseTelegramExport(inputPath);
+  const parseResult = await parseTelegramExport(inputPath);
   let out = "";
-  let first = true;
-  for await (const { meta, messages } of chats) {
-    if (!first) out += "\n---\n\n";
-    first = false;
-    out += renderHeader(meta);
-    for await (const msg of messages) {
-      const rendered = renderMessage(msg);
-      if (rendered !== null) out += "\n" + rendered;
-    }
-  }
+  await renderExport(parseResult, (chunk) => { out += chunk; });
   return out;
 }
 
