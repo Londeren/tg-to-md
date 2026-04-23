@@ -34,7 +34,11 @@
       "from_id": "user2",
       "reply_to_message_id": 1,
       "text": "Hi Alice!",
-      "text_entities": [{"type": "plain", "text": "Hi Alice!"}]
+      "text_entities": [{"type": "plain", "text": "Hi Alice!"}],
+      "reactions": [
+        {"type": "emoji", "count": 1, "emoji": "❤"},
+        {"type": "custom_emoji", "count": 2, "document_id": "stickers/x.webp"}
+      ]
     },
     {
       "id": 4,

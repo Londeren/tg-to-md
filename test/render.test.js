@@ -104,3 +104,85 @@ test("renderMessage: service without action → null", () => {
   const out = renderMessage({ id: 18, type: "service", date: "2026-01-01T10:17:00" });
   assert.equal(out, null);
 });
+
+test("renderMessage: no reactions → no [] block", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice", text_entities: [{ type: "plain", text: "hi" }],
+  });
+  assert.equal(out, "### #1 — Alice · 2026-01-01T10:00:00\n\nhi\n");
+});
+
+test("renderMessage: single emoji count=1 → [❤]", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice", text_entities: [{ type: "plain", text: "hi" }],
+    reactions: [{ type: "emoji", count: 1, emoji: "❤" }],
+  });
+  assert.equal(out, "### #1 — Alice · 2026-01-01T10:00:00 · [❤]\n\nhi\n");
+});
+
+test("renderMessage: single emoji count=3 → [❤×3]", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice", text_entities: [{ type: "plain", text: "hi" }],
+    reactions: [{ type: "emoji", count: 3, emoji: "❤" }],
+  });
+  assert.match(out, /\[❤×3\]/);
+});
+
+test("renderMessage: two distinct emoji reactions → [❤,🔥]", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice", text_entities: [{ type: "plain", text: "hi" }],
+    reactions: [
+      { type: "emoji", count: 1, emoji: "❤" },
+      { type: "emoji", count: 1, emoji: "🔥" },
+    ],
+  });
+  assert.match(out, /\[❤,🔥\]/);
+});
+
+test("renderMessage: two reaction entries with same emoji → merged [❤×2]", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice", text_entities: [{ type: "plain", text: "hi" }],
+    reactions: [
+      { type: "emoji", count: 1, emoji: "❤" },
+      { type: "emoji", count: 1, emoji: "❤" },
+    ],
+  });
+  assert.match(out, /\[❤×2\]/);
+});
+
+test("renderMessage: only custom_emoji count=2 → [🧩×2]", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice", text_entities: [{ type: "plain", text: "hi" }],
+    reactions: [{ type: "custom_emoji", count: 2, document_id: "abc" }],
+  });
+  assert.match(out, /\[🧩×2\]/);
+});
+
+test("renderMessage: mix emoji + two different custom_emoji → [😢,🧩×2]", () => {
+  const out = renderMessage({
+    id: 319524, type: "message", date: "2025-12-10T20:46:30",
+    from: "Sergey", text_entities: [{ type: "plain", text: "x" }],
+    reactions: [
+      { type: "emoji", count: 1, emoji: "😢" },
+      { type: "custom_emoji", count: 1, document_id: "a" },
+      { type: "custom_emoji", count: 1, document_id: "b" },
+    ],
+  });
+  assert.match(out, /\[😢,🧩×2\]/);
+});
+
+test("renderMessage: reactions together with reply_to_message_id", () => {
+  const out = renderMessage({
+    id: 3, type: "message", date: "2026-01-01T10:02:00",
+    from: "Bob", reply_to_message_id: 1,
+    text_entities: [{ type: "plain", text: "Hi Alice!" }],
+    reactions: [{ type: "emoji", count: 1, emoji: "❤" }],
+  });
+  assert.match(out, /### #3 — Bob · 2026-01-01T10:02:00 · ↩ #1 · \[❤\]/);
+});

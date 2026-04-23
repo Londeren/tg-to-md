@@ -42,8 +42,36 @@ function renderMessageHeader(msg) {
   if (msg.reply_to_message_id !== undefined) {
     parts.push(`↩ #${msg.reply_to_message_id}`);
   }
-  // "#id — author · date[ · ↩ #replyId]"
+  const reactions = renderReactions(msg.reactions);
+  if (reactions) parts.push(reactions);
+  // "#id — author · date[ · ↩ #replyId][ · [reactions]]"
   return `### ${parts[0]} — ${parts.slice(1).join(" · ")}`;
+}
+
+function renderReactions(reactions) {
+  if (!Array.isArray(reactions) || reactions.length === 0) return "";
+  const emojiOrder = [];
+  const emojiCounts = new Map();
+  let customCount = 0;
+  for (const r of reactions) {
+    const count = typeof r.count === "number" ? r.count : 1;
+    if (r.type === "emoji" && r.emoji) {
+      if (!emojiCounts.has(r.emoji)) {
+        emojiOrder.push(r.emoji);
+        emojiCounts.set(r.emoji, 0);
+      }
+      emojiCounts.set(r.emoji, emojiCounts.get(r.emoji) + count);
+    } else {
+      customCount += count;
+    }
+  }
+  const groups = emojiOrder.map((e) => formatReactionGroup(e, emojiCounts.get(e)));
+  if (customCount > 0) groups.push(formatReactionGroup("🧩", customCount));
+  return groups.length ? `[${groups.join(",")}]` : "";
+}
+
+function formatReactionGroup(char, count) {
+  return count === 1 ? char : `${char}×${count}`;
 }
 
 function renderBody(msg) {
