@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { renderHeader, renderMessage, renderSkippedSummary } from "../src/render.js";
+import { renderHeader, renderLegend, renderMessage, renderSkippedSummary } from "../src/render.js";
 
 test("renderHeader: name + type + id → blockquote meta, no trailing ---", () => {
   const out = renderHeader({ name: "Damir", type: "personal_chat", id: 666839415 });
@@ -26,6 +26,18 @@ test("renderHeader: only name + id (no type) → omits type", () => {
 test("renderHeader: only name (no type, no id) → Telegram only", () => {
   const out = renderHeader({ name: "Just Name" });
   assert.equal(out, "# Just Name\n\n> Telegram.\n");
+});
+
+test("renderLegend: returns static legend block ending with a single \\n", () => {
+  const expected =
+    "# Legend\n" +
+    "\n" +
+    "- `### #<id>` — message id\n" +
+    "- `↩ #<id>` — reply to message\n" +
+    "- `↪ <name>` — forwarded from\n" +
+    "- `[emoji×N, …]` — reactions (🧩 = custom emoji group)\n" +
+    "- 🖼️ photo · 📎 file · 🎤 voice/video note · 📌 pin · 📞 call\n";
+  assert.equal(renderLegend(), expected);
 });
 
 test("renderMessage: pin_message renders 📌 with referenced id", () => {

@@ -4,6 +4,19 @@ const VOICE = "🎤";
 
 const SERVICE_TYPE = "service";
 
+const LEGEND =
+  "# Legend\n" +
+  "\n" +
+  "- `### #<id>` — message id\n" +
+  "- `↩ #<id>` — reply to message\n" +
+  "- `↪ <name>` — forwarded from\n" +
+  "- `[emoji×N, …]` — reactions (🧩 = custom emoji group)\n" +
+  "- 🖼️ photo · 📎 file · 🎤 voice/video note · 📌 pin · 📞 call\n";
+
+export function renderLegend() {
+  return LEGEND;
+}
+
 export function renderHeader(meta) {
   const name = resolveChatName(meta);
   const parts = ["Telegram"];
