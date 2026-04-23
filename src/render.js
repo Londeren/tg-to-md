@@ -6,13 +6,12 @@ const SERVICE_TYPE = "service";
 
 export function renderHeader(meta) {
   const name = resolveChatName(meta);
-  const parts = [];
-  if (meta.type) parts.push(`Type: ${meta.type}`);
+  const parts = ["Telegram"];
+  if (meta.type) parts.push(meta.type);
   if (meta.id !== undefined && meta.id !== null && meta.id !== "") {
-    parts.push(`ID: ${meta.id}`);
+    parts.push(`id ${meta.id}`);
   }
-  const info = parts.length ? ` ${parts.join(". ")}.` : "";
-  return `# ${name}\n\nЭкспорт Telegram-чата.${info}\n\n---\n`;
+  return `# ${name}\n\n> ${parts.join(" · ")}.\n`;
 }
 
 function resolveChatName(meta) {
