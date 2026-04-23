@@ -181,6 +181,18 @@
       "height": 480,
       "text": "Клип",
       "text_entities": [{"type": "plain", "text": "Клип"}]
+    },
+    {
+      "id": 13,
+      "type": "service",
+      "date": "2026-01-01T10:12:00",
+      "date_unixtime": "1767262320",
+      "actor": "Alice",
+      "actor_id": "user1",
+      "action": "phone_call",
+      "duration_seconds": 125,
+      "text": "",
+      "text_entities": []
     }
   ]
 }

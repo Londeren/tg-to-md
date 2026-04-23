@@ -24,7 +24,11 @@ function resolveChatName(meta) {
 }
 
 export function renderMessage(msg) {
-  if (msg.type === SERVICE_TYPE) return null;
+  if (msg.type === SERVICE_TYPE) {
+    const body = renderServiceBody(msg);
+    if (body === null) return null;
+    return `${renderMessageHeader(msg)}\n\n${body}\n`;
+  }
 
   const header = renderMessageHeader(msg);
   const body = renderBody(msg);
@@ -32,7 +36,7 @@ export function renderMessage(msg) {
 }
 
 function renderMessageHeader(msg) {
-  const author = msg.from ?? msg.from_id ?? "unknown";
+  const author = msg.from ?? msg.from_id ?? msg.actor ?? msg.actor_id ?? "unknown";
   const date = formatDate(msg.date);
   const parts = [`#${msg.id}`, author, date];
   if (msg.reply_to_message_id !== undefined) {
@@ -109,6 +113,32 @@ function formatBlockquote(text) {
     .split("\n")
     .map((line) => `> ${line}`)
     .join("\n");
+}
+
+function renderServiceBody(msg) {
+  if (msg.action === "pin_message") {
+    return `📌 #${msg.message_id}`;
+  }
+  if (msg.action === "phone_call") {
+    if (typeof msg.duration_seconds === "number" && msg.duration_seconds > 0) {
+      return `📞 ${formatCallDuration(msg.duration_seconds)}`;
+    }
+    if (msg.discard_reason) {
+      return `📞 ${msg.discard_reason}`;
+    }
+    return `📞`;
+  }
+  return null;
+}
+
+function formatCallDuration(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
+  return `${m}:${String(s).padStart(2, "0")}`;
 }
 
 function formatDate(iso) {
