@@ -263,3 +263,72 @@ test("renderSkippedSummary: ties broken alphabetically", () => {
     "_Service messages skipped: a_action ×5, b_action ×5._",
   );
 });
+
+test("renderMessage: forwarded_from adds ↪ segment after date", () => {
+  const out = renderMessage({
+    id: 152, type: "message", date: "2014-07-29T12:31:20",
+    from: "Sergey Lebedev",
+    forwarded_from: "Саня Барабаш",
+    forwarded_from_id: "user2312769",
+    text_entities: [{ type: "plain", text: "так блин" }],
+  });
+  assert.equal(
+    out,
+    "### #152 — Sergey Lebedev · 2014-07-29T12:31:20 · ↪ Саня Барабаш\n\nтак блин\n",
+  );
+});
+
+test("renderMessage: forwarded_from='Hidden User' rendered as-is", () => {
+  const out = renderMessage({
+    id: 10, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice",
+    forwarded_from: "Hidden User",
+    text_entities: [{ type: "plain", text: "x" }],
+  });
+  assert.match(out, /↪ Hidden User/);
+});
+
+test("renderMessage: forwarded_from=null → no ↪ segment", () => {
+  const out = renderMessage({
+    id: 11, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice",
+    forwarded_from: null,
+    text_entities: [{ type: "plain", text: "x" }],
+  });
+  assert.equal(out, "### #11 — Alice · 2026-01-01T10:00:00\n\nx\n");
+});
+
+test("renderMessage: forwarded_from='' → no ↪ segment", () => {
+  const out = renderMessage({
+    id: 12, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice",
+    forwarded_from: "",
+    text_entities: [{ type: "plain", text: "x" }],
+  });
+  assert.equal(out, "### #12 — Alice · 2026-01-01T10:00:00\n\nx\n");
+});
+
+test("renderMessage: forwarded_from_id without forwarded_from → no ↪ segment", () => {
+  const out = renderMessage({
+    id: 13, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice",
+    forwarded_from_id: "user999",
+    text_entities: [{ type: "plain", text: "x" }],
+  });
+  assert.equal(out, "### #13 — Alice · 2026-01-01T10:00:00\n\nx\n");
+});
+
+test("renderMessage: full header — forwarded_from + reply + reactions in order", () => {
+  const out = renderMessage({
+    id: 200, type: "message", date: "2026-01-01T10:00:00",
+    from: "Bob",
+    forwarded_from: "Alice",
+    reply_to_message_id: 199,
+    text_entities: [{ type: "plain", text: "hi" }],
+    reactions: [{ type: "emoji", count: 2, emoji: "❤" }],
+  });
+  assert.match(
+    out,
+    /### #200 — Bob · 2026-01-01T10:00:00 · ↪ Alice · ↩ #199 · \[❤×2\]/,
+  );
+});

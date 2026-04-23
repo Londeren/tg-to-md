@@ -39,12 +39,15 @@ function renderMessageHeader(msg) {
   const author = msg.from ?? msg.from_id ?? msg.actor ?? msg.actor_id ?? "unknown";
   const date = formatDate(msg.date);
   const parts = [`#${msg.id}`, author, date];
+  if (typeof msg.forwarded_from === "string" && msg.forwarded_from.length > 0) {
+    parts.push(`↪ ${msg.forwarded_from}`);
+  }
   if (msg.reply_to_message_id !== undefined) {
     parts.push(`↩ #${msg.reply_to_message_id}`);
   }
   const reactions = renderReactions(msg.reactions);
   if (reactions) parts.push(reactions);
-  // "#id — author · date[ · ↩ #replyId][ · [reactions]]"
+  // "#id — author · date[ · ↪ forwarded_from][ · ↩ #replyId][ · [reactions]]"
   return `### ${parts[0]} — ${parts.slice(1).join(" · ")}`;
 }
 
