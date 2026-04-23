@@ -1,4 +1,4 @@
-import { renderHeader, renderMessage, renderSkippedSummary } from "./render.js";
+import { renderHeader, renderLegend, renderMessage, renderSkippedSummary } from "./render.js";
 
 /**
  * Drive one export through the render pipeline.
@@ -18,7 +18,12 @@ export async function renderExport(parseResult, write) {
   for await (const { meta, messages } of parseResult.chats) {
     stats.chatCount++;
     if (stats.firstMeta === null) stats.firstMeta = meta;
-    if (!isFirstChat) await write("\n---\n\n");
+    if (isFirstChat) {
+      await write(renderLegend());
+      await write("\n---\n\n");
+    } else {
+      await write("\n---\n\n");
+    }
     isFirstChat = false;
     await write(renderHeader(meta));
 
