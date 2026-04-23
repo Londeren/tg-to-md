@@ -81,6 +81,11 @@ function renderBody(msg) {
   const prefix = mediaPrefix(msg);
   const text = renderEntities(msg.text_entities ?? []);
 
+  if (prefix === FILE && msg.file_name) {
+    const head = `${FILE} [${msg.file_name}]`;
+    return text ? `${head}\n${text}` : head;
+  }
+
   if (prefix && text) return `${prefix} ${text}`;
   if (prefix) return prefix;
   return text;

@@ -186,3 +186,59 @@ test("renderMessage: reactions together with reply_to_message_id", () => {
   });
   assert.match(out, /### #3 — Bob · 2026-01-01T10:02:00 · ↩ #1 · \[❤\]/);
 });
+
+test("renderMessage: file with file_name and text → 📎 [name] on its own line, text below", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice",
+    file: "files/doc.pdf",
+    file_name: "doc.pdf",
+    text_entities: [{ type: "plain", text: "Документ" }],
+  });
+  assert.equal(out, "### #1 — Alice · 2026-01-01T10:00:00\n\n📎 [doc.pdf]\nДокумент\n");
+});
+
+test("renderMessage: file with file_name and no text → 📎 [name] alone", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice",
+    file: "files/doc.pdf",
+    file_name: "doc.pdf",
+    text_entities: [],
+  });
+  assert.equal(out, "### #1 — Alice · 2026-01-01T10:00:00\n\n📎 [doc.pdf]\n");
+});
+
+test("renderMessage: file without file_name → 📎 text on same line (unchanged)", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice",
+    file: "video/clip.mp4",
+    media_type: "video_file",
+    text_entities: [{ type: "plain", text: "Клип" }],
+  });
+  assert.equal(out, "### #1 — Alice · 2026-01-01T10:00:00\n\n📎 Клип\n");
+});
+
+test("renderMessage: voice message ignores file_name (🎤 prefix only)", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice",
+    file: "voice/voice_1.ogg",
+    file_name: "voice_1.ogg",
+    media_type: "voice_message",
+    text_entities: [],
+  });
+  assert.equal(out, "### #1 — Alice · 2026-01-01T10:00:00\n\n🎤\n");
+});
+
+test("renderMessage: photo ignores file_name (🖼️ prefix only)", () => {
+  const out = renderMessage({
+    id: 1, type: "message", date: "2026-01-01T10:00:00",
+    from: "Alice",
+    photo: "photos/x.jpg",
+    file_name: "x.jpg",
+    text_entities: [{ type: "plain", text: "фото" }],
+  });
+  assert.equal(out, "### #1 — Alice · 2026-01-01T10:00:00\n\n🖼️ фото\n");
+});
