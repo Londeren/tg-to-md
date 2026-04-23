@@ -181,3 +181,12 @@ function formatDate(iso) {
   // without improving anything for downstream consumption.
   return iso ?? "";
 }
+
+export function renderSkippedSummary(counts) {
+  const entries = [...counts.entries()].sort(([a, ac], [b, bc]) => {
+    if (bc !== ac) return bc - ac;
+    return a < b ? -1 : a > b ? 1 : 0;
+  });
+  const body = entries.map(([action, count]) => `${action} ×${count}`).join(", ");
+  return `_Service messages skipped: ${body}._`;
+}

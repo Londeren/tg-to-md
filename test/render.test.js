@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { renderHeader, renderMessage } from "../src/render.js";
+import { renderHeader, renderMessage, renderSkippedSummary } from "../src/render.js";
 
 test("renderHeader: name + type + id → blockquote meta, no trailing ---", () => {
   const out = renderHeader({ name: "Damir", type: "personal_chat", id: 666839415 });
@@ -241,4 +241,25 @@ test("renderMessage: photo ignores file_name (🖼️ prefix only)", () => {
     text_entities: [{ type: "plain", text: "фото" }],
   });
   assert.equal(out, "### #1 — Alice · 2026-01-01T10:00:00\n\n🖼️ фото\n");
+});
+
+test("renderSkippedSummary: single entry", () => {
+  const m = new Map([["join_group_by_link", 3]]);
+  assert.equal(renderSkippedSummary(m), "_Service messages skipped: join_group_by_link ×3._");
+});
+
+test("renderSkippedSummary: entries sorted by count desc", () => {
+  const m = new Map([["boost_apply", 2], ["join_group_by_link", 30]]);
+  assert.equal(
+    renderSkippedSummary(m),
+    "_Service messages skipped: join_group_by_link ×30, boost_apply ×2._",
+  );
+});
+
+test("renderSkippedSummary: ties broken alphabetically", () => {
+  const m = new Map([["b_action", 5], ["a_action", 5]]);
+  assert.equal(
+    renderSkippedSummary(m),
+    "_Service messages skipped: a_action ×5, b_action ×5._",
+  );
 });
