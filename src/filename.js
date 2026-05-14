@@ -24,7 +24,7 @@ export function deriveOutputPath(inputPath, parseResult) {
   if (!raw) return fallback();
   const clean = sanitizeFilename(raw);
   if (!clean) return fallback();
-  return path.join(path.dirname(inputPath), `${clean}.md`);
+  return path.join(path.dirname(inputPath), `Telegram-chat-${clean}.md`);
 }
 
 function truncateBytes(s, maxBytes) {

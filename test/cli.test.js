@@ -33,7 +33,7 @@ test("cli: uses chat name for output filename when outputArg omitted", async () 
       ],
     }));
     await runCLI([input]);
-    const produced = join(dir, "Damir.md");
+    const produced = join(dir, "Telegram-chat-Damir.md");
     const content = await readFile(produced, "utf8");
     assert.match(content, /\n# Damir\n/);
   } finally {
@@ -58,7 +58,7 @@ test("cli: outputArg overrides derivation", async () => {
     await runCLI([input, output]);
     await stat(output); // must exist
     // The name-based path must NOT exist.
-    await assert.rejects(stat(join(dir, "Damir.md")));
+    await assert.rejects(stat(join(dir, "Telegram-chat-Damir.md")));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -83,13 +83,13 @@ test("cli: bulk export falls back to input-based name", async () => {
     }));
     await runCLI([input]);
     await stat(join(dir, "export.md"));
-    await assert.rejects(stat(join(dir, "Alice.md")));
+    await assert.rejects(stat(join(dir, "Telegram-chat-Alice.md")));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
 });
 
-test("cli: saved_messages without name → 'Saved Messages.md'", async () => {
+test("cli: saved_messages without name → 'Telegram-chat-Saved Messages.md'", async () => {
   const dir = await tempDir();
   try {
     const input = join(dir, "export.json");
@@ -102,7 +102,7 @@ test("cli: saved_messages without name → 'Saved Messages.md'", async () => {
       ],
     }));
     await runCLI([input]);
-    await stat(join(dir, "Saved Messages.md"));
+    await stat(join(dir, "Telegram-chat-Saved Messages.md"));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -122,7 +122,7 @@ test("cli: chat name with forbidden chars gets sanitized", async () => {
       ],
     }));
     await runCLI([input]);
-    await stat(join(dir, "a_b_c.md"));
+    await stat(join(dir, "Telegram-chat-a_b_c.md"));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

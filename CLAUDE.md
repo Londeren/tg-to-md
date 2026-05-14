@@ -40,7 +40,7 @@ node --test                                      # все тесты
 
 Пять модулей с чёткими границами:
 
-- `bin/tg-to-md.js` — CLI-обвязка: парсинг аргументов, открытие read/write-стримов, stderr-summary, обработка кодов возврата. Имя выходного файла: если `output.md` не указан и вход — single-chat с `meta.name`, берём `<dir>/<sanitize(name)>.md`; для `saved_messages` без имени — `Saved Messages.md`; для bulk или при пустом/мусорном имени — fallback на имя входного файла.
+- `bin/tg-to-md.js` — CLI-обвязка: парсинг аргументов, открытие read/write-стримов, stderr-summary, обработка кодов возврата. Имя выходного файла: если `output.md` не указан и вход — single-chat с `meta.name`, берём `<dir>/Telegram-chat-<sanitize(name)>.md`; для `saved_messages` без имени — `Telegram-chat-Saved Messages.md`; для bulk или при пустом/мусорном имени — fallback на имя входного файла (без префикса).
 - `src/parser.js` — streaming JSON → `{ chats, isBulk, singleMeta }`. Единственное место, которое знает о `stream-json`. `singleMeta` извлекается из первых 16 КБ head-буфера и нужен CLI для деривации имени выхода.
 - `src/render.js` — чистые функции `renderHeader(meta)`, `renderMessage(msg) → string | null` (null = пропустить), `renderSkippedSummary(counts)`. Никакого IO.
 - `src/pipeline.js` — оркестрация (`renderExport(parseResult, write)`), разделяемая `bin/` и smoke-тестом: эмитит inter-chat `\n---\n\n`, собирает per-chat `Map<action, count>` для summary, возвращает `{ chatCount, rendered, skippedTotal, firstMeta }` для stderr.
