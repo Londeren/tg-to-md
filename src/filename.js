@@ -10,6 +10,20 @@ export function sanitizeFilename(name) {
   return s;
 }
 
+/**
+ * Always append a "-N" suffix (N ≥ 1, dash-separated) to a derived output path,
+ * picking the lowest N whose file does not yet exist. Keeps a re-export from
+ * silently overwriting an earlier one. `exists` is injected (fs.existsSync in
+ * the CLI) so this function stays pure and testable.
+ */
+export function numberOutputPath(desiredPath, exists) {
+  const ext = path.extname(desiredPath);
+  const stem = ext ? desiredPath.slice(0, -ext.length) : desiredPath;
+  let n = 1;
+  while (exists(`${stem}-${n}${ext}`)) n++;
+  return `${stem}-${n}${ext}`;
+}
+
 export function deriveOutputPath(inputPath, parseResult) {
   const fallback = () => {
     const ext = path.extname(inputPath);

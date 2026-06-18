@@ -33,7 +33,7 @@ test("cli: uses chat name for output filename when outputArg omitted", async () 
       ],
     }));
     await runCLI([input]);
-    const produced = join(dir, "Telegram-chat-Damir.md");
+    const produced = join(dir, "Telegram-chat-Damir-1.md");
     const content = await readFile(produced, "utf8");
     assert.match(content, /\n# Damir\n/);
   } finally {
@@ -82,8 +82,8 @@ test("cli: bulk export falls back to input-based name", async () => {
       },
     }));
     await runCLI([input]);
-    await stat(join(dir, "export.md"));
-    await assert.rejects(stat(join(dir, "Telegram-chat-Alice.md")));
+    await stat(join(dir, "export-1.md"));
+    await assert.rejects(stat(join(dir, "Telegram-chat-Alice-1.md")));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -102,7 +102,7 @@ test("cli: saved_messages without name → 'Telegram-chat-Saved Messages.md'", a
       ],
     }));
     await runCLI([input]);
-    await stat(join(dir, "Telegram-chat-Saved Messages.md"));
+    await stat(join(dir, "Telegram-chat-Saved Messages-1.md"));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -122,7 +122,29 @@ test("cli: chat name with forbidden chars gets sanitized", async () => {
       ],
     }));
     await runCLI([input]);
-    await stat(join(dir, "Telegram-chat-a_b_c.md"));
+    await stat(join(dir, "Telegram-chat-a_b_c-1.md"));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("cli: re-export does not overwrite, increments suffix", async () => {
+  const dir = await tempDir();
+  try {
+    const input = join(dir, "export.json");
+    await writeFile(input, JSON.stringify({
+      name: "Damir",
+      type: "personal_chat",
+      id: 666,
+      messages: [
+        { id: 1, type: "message", date: "2026-01-01T10:00:00", from: "A",
+          text: "hi", text_entities: [{ type: "plain", text: "hi" }] },
+      ],
+    }));
+    await runCLI([input]);
+    await runCLI([input]);
+    await stat(join(dir, "Telegram-chat-Damir-1.md"));
+    await stat(join(dir, "Telegram-chat-Damir-2.md"));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

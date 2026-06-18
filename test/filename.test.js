@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { sanitizeFilename, deriveOutputPath } from "../src/filename.js";
+import { sanitizeFilename, deriveOutputPath, numberOutputPath } from "../src/filename.js";
 
 test("sanitizeFilename: plain name returned as is", () => {
   assert.equal(sanitizeFilename("Damir"), "Damir");
@@ -89,4 +89,26 @@ test("deriveOutputPath: singleMeta null falls back", () => {
 test("deriveOutputPath: input without extension gets .md appended", () => {
   const out = deriveOutputPath("/tmp/x/backup", { isBulk: true, singleMeta: null });
   assert.equal(out, "/tmp/x/backup.md");
+});
+
+test("numberOutputPath: appends -1 when nothing exists", () => {
+  const out = numberOutputPath("/tmp/x/Telegram-chat-Damir.md", () => false);
+  assert.equal(out, "/tmp/x/Telegram-chat-Damir-1.md");
+});
+
+test("numberOutputPath: increments past existing numbered files", () => {
+  const taken = new Set(["/tmp/x/c-1.md", "/tmp/x/c-2.md"]);
+  const out = numberOutputPath("/tmp/x/c.md", (p) => taken.has(p));
+  assert.equal(out, "/tmp/x/c-3.md");
+});
+
+test("numberOutputPath: fills the first free gap", () => {
+  const taken = new Set(["/tmp/x/c-1.md", "/tmp/x/c-3.md"]);
+  const out = numberOutputPath("/tmp/x/c.md", (p) => taken.has(p));
+  assert.equal(out, "/tmp/x/c-2.md");
+});
+
+test("numberOutputPath: path without extension still gets -N", () => {
+  const out = numberOutputPath("/tmp/x/backup", () => false);
+  assert.equal(out, "/tmp/x/backup-1");
 });

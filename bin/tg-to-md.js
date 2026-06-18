@@ -5,7 +5,7 @@ import { finished } from "node:stream/promises";
 
 import { parseTelegramExport } from "../src/parser.js";
 import { renderExport } from "../src/pipeline.js";
-import { deriveOutputPath } from "../src/filename.js";
+import { deriveOutputPath, numberOutputPath } from "../src/filename.js";
 
 async function main(argv) {
   const [inputArg, outputArg] = argv.slice(2);
@@ -16,7 +16,8 @@ async function main(argv) {
 
   const started = Date.now();
   const parseResult = await parseTelegramExport(inputArg);
-  const outputPath = outputArg ?? deriveOutputPath(inputArg, parseResult);
+  const outputPath = outputArg
+    ?? numberOutputPath(deriveOutputPath(inputArg, parseResult), fs.existsSync);
 
   const out = fs.createWriteStream(outputPath);
   // No-op listener so that an early 'error' (e.g. EACCES on open) does not
