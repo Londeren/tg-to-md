@@ -10,6 +10,25 @@ export function sanitizeFilename(name) {
   return s;
 }
 
+const KIND_BY_TYPE = new Map([
+  ["personal_chat", "chat"],
+  ["bot_chat", "bot"],
+  ["saved_messages", "saved"],
+  ["private_group", "group"],
+  ["private_supergroup", "group"],
+  ["public_supergroup", "group"],
+  ["private_channel", "channel"],
+  ["public_channel", "channel"],
+]);
+
+/**
+ * Coarse chat kind for the derived output filename. Unknown, empty or
+ * non-string `type` (old/future export formats) falls back to "chat".
+ */
+export function chatKindFromType(type) {
+  return KIND_BY_TYPE.get(type) ?? "chat";
+}
+
 /**
  * Always append a "-N" suffix (N ≥ 1, dash-separated) to a derived output path,
  * picking the lowest N whose file does not yet exist. Keeps a re-export from

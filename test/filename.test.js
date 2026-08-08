@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { sanitizeFilename, deriveOutputPath, numberOutputPath } from "../src/filename.js";
+import { sanitizeFilename, deriveOutputPath, numberOutputPath, chatKindFromType } from "../src/filename.js";
 
 test("sanitizeFilename: plain name returned as is", () => {
   assert.equal(sanitizeFilename("Damir"), "Damir");
@@ -111,4 +111,25 @@ test("numberOutputPath: fills the first free gap", () => {
 test("numberOutputPath: path without extension still gets -N", () => {
   const out = numberOutputPath("/tmp/x/backup", () => false);
   assert.equal(out, "/tmp/x/backup-1");
+});
+
+test("chatKindFromType: all known types map to coarse kinds", () => {
+  assert.equal(chatKindFromType("personal_chat"), "chat");
+  assert.equal(chatKindFromType("bot_chat"), "bot");
+  assert.equal(chatKindFromType("saved_messages"), "saved");
+  assert.equal(chatKindFromType("private_group"), "group");
+  assert.equal(chatKindFromType("private_supergroup"), "group");
+  assert.equal(chatKindFromType("public_supergroup"), "group");
+  assert.equal(chatKindFromType("private_channel"), "channel");
+  assert.equal(chatKindFromType("public_channel"), "channel");
+});
+
+test("chatKindFromType: unknown or missing type falls back to chat", () => {
+  assert.equal(chatKindFromType("some_future_type"), "chat");
+  assert.equal(chatKindFromType(""), "chat");
+  assert.equal(chatKindFromType(null), "chat");
+  assert.equal(chatKindFromType(undefined), "chat");
+  assert.equal(chatKindFromType(42), "chat");
+  // Prototype-pollution guard: must not fall through to Object.prototype.
+  assert.equal(chatKindFromType("constructor"), "chat");
 });
