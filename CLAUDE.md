@@ -40,11 +40,11 @@ node --test                                      # все тесты
 
 Пять модулей с чёткими границами:
 
-- `bin/tg-to-md.js` — CLI-обвязка: парсинг аргументов, открытие read/write-стримов, stderr-summary, обработка кодов возврата. Имя выходного файла: если `output.md` не указан и вход — single-chat с `meta.name`, берём `<dir>/Telegram-chat-<sanitize(name)>.md`; для `saved_messages` без имени — `Telegram-chat-Saved Messages.md`; для bulk или при пустом/мусорном имени — fallback на имя входного файла (без префикса). К любому **деривированному** имени всегда дописывается суффикс `-N` (N≥1, через тире, первое свободное число) через `numberOutputPath` + `fs.existsSync` — так повторный экспорт не перезатирает прежний (`…-1.md`, `…-2.md`). Явно заданный `output.md` берётся как есть (перезапись разрешена).
+- `bin/tg-to-md.js` — CLI-обвязка: парсинг аргументов, открытие read/write-стримов, stderr-summary, обработка кодов возврата. Имя выходного файла: если `output.md` не указан и вход — single-chat, берём `<dir>/Telegram-<kind>-<sanitize(name)>.md`, где kind ∈ `chat`/`bot`/`group`/`channel` выводится из `meta.type` через `chatKindFromType` (незнакомый/пустой type → `chat`); `saved_messages` схлопывается в `Telegram-saved-messages.md` (имя игнорируется); для bulk или при пустом/мусорном имени — fallback на имя входного файла (без префикса). К любому **деривированному** имени всегда дописывается суффикс `-N` (N≥1, через тире, первое свободное число) через `numberOutputPath` + `fs.existsSync` — так повторный экспорт не перезатирает прежний (`…-1.md`, `…-2.md`). Явно заданный `output.md` берётся как есть (перезапись разрешена).
 - `src/parser.js` — streaming JSON → `{ chats, isBulk, singleMeta }`. Единственное место, которое знает о `stream-json`. `singleMeta` извлекается из первых 16 КБ head-буфера и нужен CLI для деривации имени выхода.
 - `src/render.js` — чистые функции `renderHeader(meta)`, `renderMessage(msg) → string | null` (null = пропустить), `renderSkippedSummary(counts)`. Никакого IO.
 - `src/pipeline.js` — оркестрация (`renderExport(parseResult, write)`), разделяемая `bin/` и smoke-тестом: эмитит inter-chat `\n---\n\n`, собирает per-chat `Map<action, count>` для summary, возвращает `{ chatCount, rendered, skippedTotal, firstMeta }` для stderr.
-- `src/filename.js` — чистые `sanitizeFilename` и `deriveOutputPath(inputPath, parseResult)`.
+- `src/filename.js` — чистые `sanitizeFilename`, `chatKindFromType` (маппинг `meta.type` → kind для имени файла) и `deriveOutputPath(inputPath, parseResult)`.
 
 Поток: `createReadStream` → stream-json pipeline → async iterator → `renderMessage` → `writeStream.write`. Память — постоянная независимо от размера входа; учитывай backpressure (`drain`).
 

@@ -65,12 +65,20 @@ test("deriveOutputPath: forbidden chars in name sanitized", () => {
   assert.equal(out, "/tmp/x/Telegram-chat-a_b_c.md");
 });
 
-test("deriveOutputPath: saved_messages without name → prefixed 'Saved Messages'", () => {
+test("deriveOutputPath: saved_messages without name → Telegram-saved-messages.md", () => {
   const out = deriveOutputPath("/tmp/x/result.json", {
     isBulk: false,
     singleMeta: { name: null, type: "saved_messages", id: 42 },
   });
-  assert.equal(out, "/tmp/x/Telegram-chat-Saved Messages.md");
+  assert.equal(out, "/tmp/x/Telegram-saved-messages.md");
+});
+
+test("deriveOutputPath: saved_messages with a name still collapses to Telegram-saved-messages.md", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", {
+    isBulk: false,
+    singleMeta: { name: "Избранное", type: "saved_messages", id: 42 },
+  });
+  assert.equal(out, "/tmp/x/Telegram-saved-messages.md");
 });
 
 test("deriveOutputPath: empty name after sanitization falls back", () => {
@@ -89,6 +97,56 @@ test("deriveOutputPath: singleMeta null falls back", () => {
 test("deriveOutputPath: input without extension gets .md appended", () => {
   const out = deriveOutputPath("/tmp/x/backup", { isBulk: true, singleMeta: null });
   assert.equal(out, "/tmp/x/backup.md");
+});
+
+test("deriveOutputPath: bot_chat → Telegram-bot-<name>.md", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", {
+    isBulk: false,
+    singleMeta: { name: "BotFather", type: "bot_chat", id: 1 },
+  });
+  assert.equal(out, "/tmp/x/Telegram-bot-BotFather.md");
+});
+
+test("deriveOutputPath: private_supergroup → Telegram-group-<name>.md", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", {
+    isBulk: false,
+    singleMeta: { name: "Партита ИВА", type: "private_supergroup", id: -100123 },
+  });
+  assert.equal(out, "/tmp/x/Telegram-group-Партита ИВА.md");
+});
+
+test("deriveOutputPath: public_channel → Telegram-channel-<name>.md", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", {
+    isBulk: false,
+    singleMeta: { name: "Новости", type: "public_channel", id: -100456 },
+  });
+  assert.equal(out, "/tmp/x/Telegram-channel-Новости.md");
+});
+
+test("deriveOutputPath: unknown type with a name → Telegram-chat-<name>.md", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", {
+    isBulk: false,
+    singleMeta: { name: "Damir", type: "weird_new_type", id: 1 },
+  });
+  assert.equal(out, "/tmp/x/Telegram-chat-Damir.md");
+});
+
+test("deriveOutputPath: missing type with a name → Telegram-chat-<name>.md", () => {
+  const out = deriveOutputPath("/tmp/x/result.json", {
+    isBulk: false,
+    singleMeta: { name: "Damir", type: null, id: 1 },
+  });
+  assert.equal(out, "/tmp/x/Telegram-chat-Damir.md");
+});
+
+test("deriveOutputPath: empty/garbage name on a channel falls back to input-based name", () => {
+  for (const name of ["", "...", "   ", null]) {
+    const out = deriveOutputPath("/tmp/x/result.json", {
+      isBulk: false,
+      singleMeta: { name, type: "public_channel", id: -100456 },
+    });
+    assert.equal(out, "/tmp/x/result.md", `name=${JSON.stringify(name)}`);
+  }
 });
 
 test("numberOutputPath: appends -1 when nothing exists", () => {

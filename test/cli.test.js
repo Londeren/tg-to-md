@@ -89,7 +89,7 @@ test("cli: bulk export falls back to input-based name", async () => {
   }
 });
 
-test("cli: saved_messages without name → 'Telegram-chat-Saved Messages.md'", async () => {
+test("cli: saved_messages without name → 'Telegram-saved-messages-1.md'", async () => {
   const dir = await tempDir();
   try {
     const input = join(dir, "export.json");
@@ -102,7 +102,7 @@ test("cli: saved_messages without name → 'Telegram-chat-Saved Messages.md'", a
       ],
     }));
     await runCLI([input]);
-    await stat(join(dir, "Telegram-chat-Saved Messages-1.md"));
+    await stat(join(dir, "Telegram-saved-messages-1.md"));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

@@ -53,11 +53,15 @@ export function deriveOutputPath(inputPath, parseResult) {
   const meta = parseResult.singleMeta;
   if (!meta) return fallback();
 
-  const raw = meta.name || (meta.type === "saved_messages" ? "Saved Messages" : "");
-  if (!raw) return fallback();
-  const clean = sanitizeFilename(raw);
+  const kind = chatKindFromType(meta.type);
+  // "saved" would duplicate the name ("Telegram-saved-Saved Messages"),
+  // so it collapses into a fixed filename; meta.name is ignored.
+  if (kind === "saved") {
+    return path.join(path.dirname(inputPath), "Telegram-saved-messages.md");
+  }
+  const clean = sanitizeFilename(meta.name);
   if (!clean) return fallback();
-  return path.join(path.dirname(inputPath), `Telegram-chat-${clean}.md`);
+  return path.join(path.dirname(inputPath), `Telegram-${kind}-${clean}.md`);
 }
 
 function truncateBytes(s, maxBytes) {
