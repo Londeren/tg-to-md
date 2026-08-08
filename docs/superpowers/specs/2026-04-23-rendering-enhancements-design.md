@@ -116,6 +116,8 @@ _Service messages skipped: join_group_by_link ×30, boost_apply ×2._
 
 ### 5. Имя выходного файла из названия чата
 
+> **Superseded:** имя выходного файла теперь включает kind — см. [2026-08-08-chat-type-in-filename-design.md](2026-08-08-chat-type-in-filename-design.md).
+
 `parseTelegramExport` расширяется:
 
 ```js
@@ -251,6 +253,8 @@ _Service messages skipped: <sorted entries separated by ", ">._
 - пустой ввод → `""`
 
 ### `test/cli.test.js` — расширить
+
+> **Superseded:** ожидаемые имена файлов ниже (`Damir.md`, `Saved Messages.md`) устарели — имя теперь включает kind-префикс, см. [2026-08-08-chat-type-in-filename-design.md](2026-08-08-chat-type-in-filename-design.md).
 
 - `outputArg` передан → используется он без модификации
 - single-chat с `name: "Damir"`, input `/tmp/x/result.json` → `/tmp/x/Damir.md`

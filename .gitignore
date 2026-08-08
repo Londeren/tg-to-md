@@ -4,3 +4,6 @@ node_modules/
 # Real Telegram exports — contain private messages, never commit.
 result.json
 
+# Derived output from real exports — same private content as above.
+Telegram-*.md
+
